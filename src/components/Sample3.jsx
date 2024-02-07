@@ -16,35 +16,42 @@ function Sample3() {
         wireframes: false,
       },
     });
-    const floor1 = Bodies.rectangle(500, 200, 300, 30, {
+    Render.run(render);
+
+    // 回転オブジェクト
+    const floor = Bodies.rectangle(500, 200, 300, 30, {
       angle: 0,
     });
+    // 回転軸
     const pivot = Bodies.circle(500, 200, 5, { isStatic: true });
+    // 回転制約
     const constraint = Constraint.create({
-      bodyA: floor1,
-      pointA: { x: 0, y: 0 },
-      bodyB: pivot,
-      pointB: { x: 0, y: 0 },
+      bodyA: floor, // 回転させたいオブジェクト
+      pointA: { x: 0, y: 0 }, // 回転させたいオブジェクトの中心
+      bodyB: pivot, // 回転軸
+      pointB: { x: 0, y: 0 }, // 回転軸の中心
     });
 
+    // 地面
     const ground = Bodies.rectangle(400, 585, 800, 30, { isStatic: true });
 
-    Composite.add(engine.world, [constraint, floor1, ground]);
-
+    // 生成するボール
     const ballComposite = Composite.create();
     setBallComposite(ballComposite);
-    Composite.add(engine.world, ballComposite);
 
+    // オブジェクト登録
+    Composite.add(engine.world, [constraint, floor, ground, ballComposite]);
+
+    // 更新前処理をイベントに追加
     Events.on(engine, "beforeUpdate", function (event) {
-      Body.setAngularVelocity(floor1, 0.05);
+      Body.setAngularVelocity(floor, 0.05);
     });
 
-    Render.run(render);
-    var runner = Runner.create();
-
-    Runner.run(runner, engine);
+    // オブジェクト用レンダリング作成
+    Runner.run(Runner.create(), engine);
   }, []);
 
+  // クリックでボタン生成
   const handleClick = (e) => {
     const rect = e.target.getBoundingClientRect();
     const x = e.clientX - rect.left;

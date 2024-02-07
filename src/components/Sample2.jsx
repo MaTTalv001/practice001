@@ -26,6 +26,7 @@ function Sample2() {
         wireframes: false,
       },
     });
+    Render.run(render);
 
     // 静止オブジェクト（空中の床と地面）
     const floor = Bodies.rectangle(400, 200, 500, 30, { isStatic: true });
@@ -51,25 +52,22 @@ function Sample2() {
     const mouseConstraint = MouseConstraint.create(engine, {
       mouse: mouse,
       constraint: {
-        stiffness: 0.2,
+        stiffness: 0.2, // ドラッグ時の弾性
         render: {
-          visible: false,
+          visible: false, // マウス制約の表示非表示
         },
       },
     });
 
+    // マウスクリックのイベント
     Events.on(mouseConstraint, "mousedown", (event) => {
+      // クリックしたオブジェクトを選択、但し床は除外
       if (event.source.body && event.source.body !== ground) {
         selectObjRef.current = event.source.body;
+        Body.setStatic(event.source.body, false);
       } else {
+        // 床やなにもないところをクリックしたら選択解除
         selectObjRef.current = null;
-      }
-    });
-
-    // ドラッグ開始時に静止オブジェクトを可動にする
-    Events.on(mouseConstraint, "startdrag", (event) => {
-      if (event.body === floor) {
-        Body.setStatic(event.body, false);
       }
     });
 
@@ -80,6 +78,7 @@ function Sample2() {
       }
     });
 
+    // オブジェクト登録
     Composite.add(engine.world, [
       floor,
       ground,
@@ -88,14 +87,14 @@ function Sample2() {
       triangle,
       mouseConstraint,
     ]);
-    Render.run(render);
     Runner.run(Runner.create(), engine);
   }, []);
 
   const handleWheel = (e) => {
+    // 選択中のオブジェクトがあるなら選択オブジェクトを回転
     if (selectObjRef.current) {
-      const delta = e.deltaY;
-      const angle = delta * 0.001;
+      const delta = e.deltaY; // マウスホイールの回転量
+      const angle = delta * 0.001; // 回転量が 100 or -100だったので調整する
       Body.rotate(selectObjRef.current, angle);
     }
   };
