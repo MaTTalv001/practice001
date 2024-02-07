@@ -63,6 +63,7 @@ class MatterEngine {
 
   /**
    * @method オブジェクト生成
+   * @param {event} クリックイベント
    * @description クリックした座標にオブジェクト生成
    */
   clickSpawnObject(event, radius = 30, density = 10) {
@@ -84,6 +85,12 @@ class MatterEngine {
 
   /**
    * @method 床生成
+   * @param {number} x X座標
+   * @param {number} y Y座標
+   * @param {number} width 幅
+   * @param {number} height 高さ
+   * @param {number} angle 角度
+   * @param {number} density 密度
    * @description 静止している床を生成
    */
   addFloor(x, y, width, height = 30, angle = 0, density = 10) {
@@ -97,6 +104,11 @@ class MatterEngine {
 
   /**
    * @method 四角形生成
+   * @param {number} x X座標
+   * @param {number} y Y座標
+   * @param {number} width 幅
+   * @param {number} height 高さ
+   * @param {number} density 密度
    * @description 静止している四角形を生成
    */
   addSquare(x, y, width = 100, height = 100, density = 10, angle = 0) {

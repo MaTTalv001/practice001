@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import MatterEngine from "../common/MatterEngine";
+import MatterEngine from "../lib/MatterEngine";
 
 function Sample1() {
   const matterRef = useRef(null);
