@@ -9,6 +9,7 @@ class MatterEngine {
   runner = null;
   composite = null;
   spawnObject = null;
+  render = null;
   constructor() {
     this.matter = Matter;
     this.engine = this.matter.Engine.create();
@@ -23,7 +24,7 @@ class MatterEngine {
    * @description 表示する要素のクラス名を指定して、表示設定を行う
    */
   setup(elementName) {
-    const render = this.matter.Render.create({
+    this.render = this.matter.Render.create({
       element: document.body.querySelector(elementName),
       engine: this.engine,
       options: {
@@ -32,7 +33,7 @@ class MatterEngine {
         wireframes: false,
       },
     });
-    this.matter.Render.run(render);
+    this.matter.Render.run(this.render);
   }
 
   /**
@@ -43,81 +44,17 @@ class MatterEngine {
     this.runner.run(this.runner.create(), this.engine);
   }
 
-  /**
-   * @method 地面作成
-   * @description 静止オブジェクトとして地面作成
-   */
-  addGround() {
-    const ground = this.bodies.rectangle(400, 585, 800, 30, { isStatic: true });
-    this.composite.add(this.engine.world, ground);
+  getMatter() {
+    return this.matter;
   }
 
   /**
-   * @method 生成オブジェクトの設定
-   * @description 連続的に生成するオブジェクトの設定
+   * @method オブジェクト登録
+   * @param {Bodies} object 登録したいオブジェクト
+   * @description オブジェクトを登録する。配列も可能。
    */
-  setSpawnObject() {
-    this.spawnObject = this.composite.create();
-    this.composite.add(this.engine.world, this.spawnObject);
-  }
-
-  /**
-   * @method オブジェクト生成
-   * @param {event} クリックイベント
-   * @description クリックした座標にオブジェクト生成
-   */
-  clickSpawnObject(event, radius = 30, density = 10) {
-    const rect = event.target.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    const ball = this.bodies.circle(x, y, radius, { density: density });
-    this.composite.add(this.spawnObject, ball);
-  }
-
-  /**
-   * @method オブジェクトクリア
-   * @description 生成したオブジェクトをクリア
-   */
-  clearObject() {
-    if (this.composite === null || this.spawnObject === null) return;
-    this.composite.clear(this.spawnObject, false);
-  }
-
-  /**
-   * @method 床生成
-   * @param {number} x X座標
-   * @param {number} y Y座標
-   * @param {number} width 幅
-   * @param {number} height 高さ
-   * @param {number} angle 角度
-   * @param {number} density 密度
-   * @description 静止している床を生成
-   */
-  addFloor(x, y, width, height = 30, angle = 0, density = 10) {
-    const floor = this.bodies.rectangle(x, y, width, height, {
-      angle: angle,
-      isStatic: true,
-      density: density,
-    });
-    this.composite.add(this.engine.world, floor);
-  }
-
-  /**
-   * @method 四角形生成
-   * @param {number} x X座標
-   * @param {number} y Y座標
-   * @param {number} width 幅
-   * @param {number} height 高さ
-   * @param {number} density 密度
-   * @description 静止している四角形を生成
-   */
-  addSquare(x, y, width = 100, height = 100, density = 10, angle = 0) {
-    const square = this.bodies.rectangle(x, y, width, height, {
-      angle: angle,
-      isStatic: true,
-      density: density,
-    });
-    this.composite.add(this.engine.world, square);
+  registerObject(object) {
+    this.composite.add(this.engine.world, object);
   }
 }
 

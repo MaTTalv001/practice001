@@ -1,0 +1,39 @@
+{
+  "name": "Sample1",
+  "version": "1.0.0",
+  "description": "ボール出現サンプル",
+  "Stage": [
+    {
+      "type": "Rectangle",
+      "x": 400,
+      "y": 585,
+      "width": 800,
+      "height": 30,
+      "option": {
+        "isStatic": true
+      }
+    },
+    {
+      "type": "Rectangle",
+      "x": 300,
+      "y": 400,
+      "width": 500,
+      "height": 30,
+      "option": {
+        "angle": 0.2,
+        "isStatic": true
+      }
+    },
+    {
+      "type": "Rectangle",
+      "x": 500,
+      "y": 200,
+      "width": 500,
+      "height": 30,
+      "option": {
+        "angle": -0.2,
+        "isStatic": true
+      }
+    }
+  ]
+}
