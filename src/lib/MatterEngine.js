@@ -48,6 +48,10 @@ class MatterEngine {
     return this.matter;
   }
 
+  getEngine() {
+    return this.Engine;
+  }
+
   /**
    * @method オブジェクト登録
    * @param {Bodies} object 登録したいオブジェクト

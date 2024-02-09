@@ -8,6 +8,7 @@ class Bodies {
   Object = null;
   PosX = 0;
   PosY = 0;
+  Type = "default";
 
   /**
    * @method コンストラクタ
@@ -16,12 +17,13 @@ class Bodies {
    * @param {number} y Y座標
    * @description 初期化
    */
-  constructor(matter, x, y) {
+  constructor(matter, x, y, type) {
     this.Bodies = matter.Bodies;
     this.Composite = matter.Composite;
     this.CompositeCreate = matter.Composite.create();
     this.PosX = x;
     this.PosY = y;
+    this.Type = type;
   }
 
   /**
@@ -57,17 +59,17 @@ class Bodies {
     return this.Object || this.CompositeCreate;
   }
 
-  getColorSetting(option, type = "default") {
+  getColorSetting(option) {
     let isStatic = option && option.isStatic !== undefined;
-    return getColor(type, isStatic)
+    return getColor(this.Type, isStatic)
   }
 
-  getOption(option, type = "default") {
+  getOption(option) {
     let optionAddColor;
     if (option) {
-      optionAddColor = { ...option, render: this.getColorSetting(option, type) };
+      optionAddColor = { ...option, render: this.getColorSetting(option) };
     } else {
-      optionAddColor = { render: this.getColorSetting(option, type) };
+      optionAddColor = { render: this.getColorSetting(option) };
     }
     return optionAddColor;
   }
@@ -90,13 +92,13 @@ class Rectangle extends Bodies {
     matter,
     x = this.PosX,
     y = this.PosY,
+    type = "default",
     width = this.DefaultWidth,
     height = this.DefaultHeight,
     option = {},
     isSpawn = false,
-    type = "default"
   ) {
-    super(matter, x, y);
+    super(matter, x, y, type);
     if (!isSpawn) {
       this.Object = this.Bodies.rectangle(x, y, width, height, this.getOption(option, type));
       this.Composite.add(this.CompositeCreate, this.Object);
@@ -133,14 +135,14 @@ class Circle extends Bodies {
     matter,
     x,
     y,
+    type = "default",
     radius = this.DefaultRadius,
     option = {},
     isSpawn = false,
-    type = "default"
   ) {
-    super(matter, x, y, option, isSpawn);
+    super(matter, x, y, type);
     if (!isSpawn) {
-      this.Object = this.Bodies.circle(x, y, radius, this.getOption(option, type));
+      this.Object = this.Bodies.circle(x, y, radius, this.getOption(option));
       this.Composite.add(this.CompositeCreate, this.Object);
     } else {
       this.Object = null;
@@ -173,12 +175,12 @@ class Triangle extends Bodies {
     matter,
     x,
     y,
+    type = "default",
     height = this.DefaultHeight,
     option = {},
     isSpawn = false,
-    type = "default"
   ) {
-    super(matter, x, y);
+    super(matter, x, y, type);
     if (!isSpawn) {
       this.Object = this.Bodies.polygon(x, y, 3, height, this.getOption(option, type));
       this.Composite.add(this.CompositeCreate, this.Object);
@@ -200,13 +202,13 @@ class Polygon extends Bodies {
     matter,
     x,
     y,
+    type = "default",
     sides = this.DefaultSides,
     radius = this.DefaultRadius,
     option = {},
     isSpawn = false,
-    type = "default"
   ) {
-    super(matter, x, y);
+    super(matter, x, y, type);
     if (!isSpawn) {
       this.Object = this.Bodies.polygon(x, y, sides, radius, this.getOption(option, type));
       this.Composite.add(this.CompositeCreate, this.Object);
@@ -224,19 +226,19 @@ class Polygon extends Bodies {
 // 引数作成のマッパー
 const mapper = {
   Rectangle: (stage, type) => {
-    return [stage.x, stage.y, stage.width, stage.height, stage.option, false, type];
+    return [stage.x, stage.y, type, stage.width, stage.height, stage.option, false];
   },
 
   Circle: (stage, type) => {
-    return [stage.x, stage.y, stage.radius, stage.option, false, type];
+    return [stage.x, stage.y, type, stage.radius, stage.option, false];
   },
 
   Triangle: (stage, type) => {
-    return [stage.x, stage.y, stage.height, stage.option, false, type];
+    return [stage.x, stage.y, type, stage.height, stage.option, false];
   },
 
   Polygon: (stage, type) => {
-    return [stage.x, stage.y, stage.sides, stage.radius, stage.option, false, type];
+    return [stage.x, stage.y, type, stage.sides, stage.radius, stage.option, false];
   },
 };
 

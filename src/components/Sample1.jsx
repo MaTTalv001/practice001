@@ -34,7 +34,7 @@ function Sample1() {
     setMatter(matterEngine);
 
     // 生成ボールの登録
-    const ball = new Circle(matterEngine.getMatter(), 0, 0, 20, {}, true);
+    const ball = new Circle(matterEngine.getMatter(), 0, 0, "default", 20, {}, true);
     setSpawnBall(ball);
     matterEngine.registerObject(ball.getObject());
   }, []);

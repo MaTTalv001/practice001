@@ -78,6 +78,30 @@ function Sample2() {
       }
     });
 
+    Events.on(engine, 'collisionStart', function (event) {
+      var pairs = event.pairs;
+
+      // change object colours to show those starting a collision
+      for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i];
+        if (pair.bodyA === ground || pair.bodyB === ground) continue;
+        pair.bodyA.render.fillStyle = 'red';
+        pair.bodyB.render.fillStyle = 'red';
+      }
+    });
+
+    Events.on(engine, 'collisionEnd', function (event) {
+      var pairs = event.pairs;
+
+      // change object colours to show those ending a collision
+      for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i];
+        if (pair.bodyA === ground || pair.bodyB === ground) continue;
+        pair.bodyA.render.fillStyle = 'green';
+        pair.bodyB.render.fillStyle = 'green';
+      }
+    });
+
     // オブジェクト登録
     Composite.add(engine.world, [
       floor,
