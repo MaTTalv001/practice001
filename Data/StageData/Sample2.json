@@ -1,0 +1,62 @@
+{
+  "name": "Sample1",
+  "version": "1.0.0",
+  "description": "ボール出現サンプル",
+  "Stage": [
+    {
+      "bodiesType": "Rectangle",
+      "x": 400,
+      "y": 585,
+      "width": 800,
+      "height": 30,
+      "option": {
+        "isStatic": true,
+        "sollisionFilter": {
+          "group": -1
+        },
+        "label": "stage"
+      }
+    },
+    {
+      "bodiesType": "Triangle",
+      "x": 400,
+      "y": 400,
+      "width": 500,
+      "height": 30,
+      "option": {
+        "isStatic": true,
+        "sollisionFilter": {
+          "group": -1
+        },
+        "label": "stage"
+      }
+    },
+    {
+      "bodiesType": "Circle",
+      "x": 200,
+      "y": 200,
+      "radius": 50,
+      "option": {
+        "isStatic": true,
+        "sollisionFilter": {
+          "group": -1
+        },
+        "label": "stage"
+      }
+    }
+  ],
+  "Switch": {
+    "bodiesType": "Rectangle",
+    "x": 600,
+    "y": 550,
+    "width": 100,
+    "height": 50,
+    "option": {
+      "isStatic": true,
+      "sollisionFilter": {
+        "group": -1
+      },
+      "label": "switch"
+    }
+  }
+}

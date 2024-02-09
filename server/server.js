@@ -8,8 +8,9 @@ const port = 3001;
 app.use(cors());
 
 app.get("/", (req, res) => {
+  const stage = req.query.stage;
   try {
-    const dataPath = path.join(__dirname, "../Data/StageData/Sample1.json");
+    const dataPath = path.join(__dirname, `../Data/StageData/${stage}.json`);
     const data = fs.readFileSync(dataPath, "utf8");
     const jsonData = JSON.parse(data);
     res.json(jsonData);

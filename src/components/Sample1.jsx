@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import MatterEngine from "../lib/MatterEngine";
 import { Circle, createStageObject, createObject } from "../lib/Bodies";
 import CollisionEvents from "../lib/CollisionEvents";
-import { useNavigate } from "react-router-dom";
 
 function Sample1() {
   const matterRef = useRef(null);
@@ -16,12 +15,15 @@ function Sample1() {
     setLoading(true);
     // ステージデータの読み込み
     const getStageData = async () => {
-      const url = process.env.REACT_APP_SERVER_URL;
+      // TODO : ここで何かしらの方法でステージ名前を取得する
+      const query = "Sample1";
+      //const query = "Sample2"; // こちらのコメントアウトを外すと別のステージデータを取得できる
+      const url = `${process.env.REACT_APP_SERVER_URL}?stage=${query}`;
       await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-        },
+        }
       })
         .then((res) => res.json())
         .then((data) => {
