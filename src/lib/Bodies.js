@@ -1,14 +1,15 @@
 import "matter-js";
 import getColor from "../common/ColorSetting";
+import { Body } from "matter-js";
 
 class Bodies {
-  Composite = null;
-  CompositeCreate = null;
-  Bodies = null;
-  Object = null;
-  PosX = 0;
-  PosY = 0;
-  Type = "default";
+  composite = null;
+  compositeCreate = null;
+  bodies = null;
+  object = null;
+  posX = 0;
+  posY = 0;
+  type = "default";
 
   /**
    * @method コンストラクタ
@@ -18,12 +19,12 @@ class Bodies {
    * @description 初期化
    */
   constructor(matter, x, y, type) {
-    this.Bodies = matter.Bodies;
-    this.Composite = matter.Composite;
-    this.CompositeCreate = matter.Composite.create();
-    this.PosX = x;
-    this.PosY = y;
-    this.Type = type;
+    this.bodies = matter.Bodies;
+    this.composite = matter.Composite;
+    this.compositeCreate = this.composite.create();
+    this.posX = x;
+    this.posY = y;
+    this.type = type;
   }
 
   /**
@@ -31,7 +32,49 @@ class Bodies {
    * @param {bool} bool 静止しているか否か
    */
   setStatic(bool) {
-    this.Bodies.setStatic(this.Object, bool);
+    Body.setStatic(this.object, bool);
+  }
+
+  /**
+   * @method オブジェクトの位置設定
+   * @param {number} x X座標
+   * @param {number} y Y座標
+   * @description オブジェクトの位置を設定
+   */
+  setPosition({ x, y }) {
+    Body.setPosition(this.object, { x, y });
+  }
+
+  /**
+   * @method オブジェクトの移動アニメーション
+   * @param {number} x X座標
+   * @param {number} y Y座標
+   * @returns {bool} アニメーション終了フラグ
+   * @description 静止オブジェクトにおける目標座標までのアニメーション移動
+   */
+  setPositionAnimate(x, y) {
+    // 現在の座標を取得
+    const currentPosition = this.object.position;
+
+    // 目標座標までの距離を計算
+    const distanceX = x - currentPosition.x;
+    const distanceY = y - currentPosition.y;
+
+    // 移動速度を計算
+    const easing = 0.05;
+    const speedX = distanceX * easing;
+    const speedY = distanceY * easing;
+    // 目標座標を計算
+    const targetPosition = { x: currentPosition.x + speedX, y: currentPosition.y + speedY };
+
+    // 距離が一定以下なら終了とみなす
+    // ルート計算は重いので、X座標とY座標の差分が絶対値の1以下なら終了とみなす
+    // Math.abs : 絶対値を返却する関数
+    if (Math.abs(distanceX) < 1 && Math.abs(distanceY) < 1) {
+      return true;
+    }
+    this.setPosition(targetPosition);
+    return false;
   }
 
   /**
@@ -48,7 +91,7 @@ class Bodies {
    * @description 生成したオブジェクトを全削除
    */
   objectClear() {
-    this.Composite.clear(this.CompositeCreate, false);
+    this.composite.clear(this.compositeCreate, false);
   }
 
   /**
@@ -56,12 +99,12 @@ class Bodies {
    * @description 生成したオブジェクトを取得
    */
   getObject() {
-    return this.Object || this.CompositeCreate;
+    return this.object || this.compositeCreate;
   }
 
   getColorSetting(option) {
     let isStatic = option && option.isStatic !== undefined;
-    return getColor(this.Type, isStatic)
+    return getColor(this.type, isStatic)
   }
 
   getOption(option) {
@@ -90,8 +133,8 @@ class Rectangle extends Bodies {
    */
   constructor(
     matter,
-    x = this.PosX,
-    y = this.PosY,
+    x = this.posX,
+    y = this.posY,
     type = "default",
     width = this.DefaultWidth,
     height = this.DefaultHeight,
@@ -100,10 +143,10 @@ class Rectangle extends Bodies {
   ) {
     super(matter, x, y, type);
     if (!isSpawn) {
-      this.Object = this.Bodies.rectangle(x, y, width, height, this.getOption(option, type));
-      this.Composite.add(this.CompositeCreate, this.Object);
+      this.object = this.bodies.rectangle(x, y, width, height, this.getOption(option, type));
+      this.composite.add(this.compositeCreate, this.object);
     } else {
-      this.Object = null;
+      this.object = null;
     }
   }
 
@@ -116,8 +159,8 @@ class Rectangle extends Bodies {
    * @param {object} option オプション
    */
   objectSpawn(x, y, width = this.DefaultWidth, height = this.DefaultHeight, option = {}) {
-    const rectangle = this.Bodies.rectangle(x, y, width, height, option)
-    this.Composite.add(this.CompositeCreate, rectangle);
+    const rectangle = this.bodies.rectangle(x, y, width, height, option)
+    this.composite.add(this.compositeCreate, rectangle);
   }
 }
 
@@ -142,10 +185,10 @@ class Circle extends Bodies {
   ) {
     super(matter, x, y, type);
     if (!isSpawn) {
-      this.Object = this.Bodies.circle(x, y, radius, this.getOption(option));
-      this.Composite.add(this.CompositeCreate, this.Object);
+      this.object = this.bodies.circle(x, y, radius, this.getOption(option));
+      this.composite.add(this.compositeCreate, this.object);
     } else {
-      this.Object = null;
+      this.object = null;
     }
   }
 
@@ -156,8 +199,8 @@ class Circle extends Bodies {
    * @param {object} option オプション
    */
   objectSpawn(x, y, radius = this.DefaultRadius, option = {}) {
-    const circle = this.Bodies.circle(x, y, radius, option);
-    this.Composite.add(this.CompositeCreate, circle);
+    const circle = this.bodies.circle(x, y, radius, option);
+    this.composite.add(this.compositeCreate, circle);
   }
 }
 
@@ -182,16 +225,16 @@ class Triangle extends Bodies {
   ) {
     super(matter, x, y, type);
     if (!isSpawn) {
-      this.Object = this.Bodies.polygon(x, y, 3, height, this.getOption(option, type));
-      this.Composite.add(this.CompositeCreate, this.Object);
+      this.object = this.bodies.polygon(x, y, 3, height, this.getOption(option, type));
+      this.composite.add(this.compositeCreate, this.object);
     } else {
-      this.Object = null;
+      this.object = null;
     }
   }
 
   objectSpawn(x, y, height, option) {
-    const triangle = this.Bodies.polygon(x, y, 3, height, option);
-    this.Composite.add(this.CompositeCreate, triangle);
+    const triangle = this.bodies.polygon(x, y, 3, height, option);
+    this.composite.add(this.compositeCreate, triangle);
   }
 }
 
@@ -210,16 +253,16 @@ class Polygon extends Bodies {
   ) {
     super(matter, x, y, type);
     if (!isSpawn) {
-      this.Object = this.Bodies.polygon(x, y, sides, radius, this.getOption(option, type));
-      this.Composite.add(this.CompositeCreate, this.Object);
+      this.object = this.bodies.polygon(x, y, sides, radius, this.getOption(option, type));
+      this.composite.add(this.compositeCreate, this.object);
     } else {
-      this.Object = null;
+      this.object = null;
     }
   }
 
   objectSpawn(x, y, sides, height, option) {
-    const triangle = this.Bodies.polygon(x, y, sides, height, option);
-    this.Composite.add(this.CompositeCreate, triangle);
+    const triangle = this.bodies.polygon(x, y, sides, height, option);
+    this.composite.add(this.compositeCreate, triangle);
   }
 }
 
@@ -262,7 +305,7 @@ const createObject = (matter, data, type = "default") => {
     Polygon,
   }[data.bodiesType];
   const args = mapper[data.bodiesType](data, type);
-  return new Class(matter, ...args).getObject();
+  return new Class(matter, ...args);
 }
 
 export { Bodies, Rectangle, Circle, Triangle, Polygon, createStageObject, createObject };

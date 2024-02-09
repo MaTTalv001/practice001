@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MatterEngine from "../lib/MatterEngine";
 import { Circle, createStageObject, createObject } from "../lib/Bodies";
 import CollisionEvents from "../lib/CollisionEvents";
 import { useNavigate } from "react-router-dom";
 
 function Sample1() {
-  const [matter, setMatter] = useState(null);
-  const [spawnBall, setSpawnBall] = useState(null);
-  const [stageData, setStageData] = useState(null);
+  const matterRef = useRef(null);
+  const spawnBallRef = useRef(null);
+  const switchObjRef = useRef(null);
+  const stageDataRef = useRef(null);
+  const [gameClear, setGameClear] = useState(false);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     setLoading(true);
@@ -24,51 +25,57 @@ function Sample1() {
       })
         .then((res) => res.json())
         .then((data) => {
-          setStageData(data);
+          stageDataRef.current = data;
+          matterInitialize();
+          // スポーンボールの登録
+          const ball = new Circle(matterRef.current.getMatter(), 0, 0, "default", 20, {}, true);
+          spawnBallRef.current = ball;
+          matterRef.current.registerObject(ball);
+          setLoading(false);
         })
         .catch((err) => {
           console.error(err);
         });
     };
     getStageData();
-
-    const matterEngine = new MatterEngine();
-    setMatter(matterEngine);
-
-    // 生成ボールの登録
-    const ball = new Circle(matterEngine.getMatter(), 0, 0, "default", 20, {}, true);
-    setSpawnBall(ball);
-    matterEngine.registerObject(ball.getObject());
-
   }, []);
 
   useEffect(() => {
-    if (matter) {
-      matter.setup(".Sample1");
-      matter.run();
-      const colEvents = new CollisionEvents(matter.getEngine());
-      colEvents.pushSwitch(handleSwitch);
-      if (stageData) {
-        const stageObject = createStageObject(matter.getMatter(), stageData.Stage);
-        const switchButton = createObject(matter.getMatter(), stageData.Switch, "Switch");
-        matter.registerObject([switchButton, ...stageObject]);
-      }
-      setLoading(false);
-
-      return () => {
-        colEvents.removeTouchEvents();
-      }
-
+    if (gameClear) {
+      const timeoutId = setTimeout(() => {
+        alert("ゲームクリア");
+        clearTimeout(timeoutId);
+      }, 1000);
     }
-  }, [stageData, matter]);
+  }, [gameClear]);
+
+  const matterInitialize = () => {
+    // セットアップ
+    matterRef.current = new MatterEngine();
+    matterRef.current.setup(".Sample1");
+    matterRef.current.run();
+
+    // イベント設定
+    const colEvents = new CollisionEvents(matterRef.current.getEngine());
+    colEvents.pushSwitch(handleSwitch);
+
+    // オブジェクト登録
+    const switchButton = createObject(matterRef.current.getMatter(), stageDataRef.current.Switch, "Switch");
+    switchObjRef.current = switchButton;
+    const stageObject = createStageObject(matterRef.current.getMatter(), stageDataRef.current.Stage);
+    matterRef.current.registerObject([switchButton, ...stageObject]);
+  }
 
   // スイッチ押下時のイベント
   const handleSwitch = () => {
-    // ちょっと待つ
-    setTimeout(() => {
-      alert("ピタッゴラッスイッチ♪");
-      navigate(0);
-    }, 1000);
+    // スイッチ押下アニメーション
+    const intervalId = setInterval(() => {
+      const results = switchObjRef.current.setPositionAnimate(600, 580);
+      setGameClear(results);
+      if (results) {
+        clearInterval(intervalId);
+      }
+    }, 1000 / 30); // 30FPS
   };
 
   // クリックでボール生成
@@ -79,22 +86,21 @@ function Sample1() {
     const radius = 25;
     const option = {
       label: "ball",
+      density: 10,
       render: {
         fillStyle: "yellow"
       }
     }
-    spawnBall.objectSpawn(x, y, radius, option);
+    spawnBallRef.current.objectSpawn(x, y, radius, option);
   };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
 
   return (
     <div>
-      <h2>{stageData && stageData.name}</h2>
-      <button onClick={() => spawnBall.objectClear()}>ボールクリア</button>
+      {loading ? <div>loading...</div> :
+        <>
+          <h2>{stageDataRef.current && stageDataRef.current.name}</h2>
+          <button onClick={() => spawnBallRef.current.objectClear()}>ボールクリア</button>
+        </>}
       <div className="Sample1" onClick={(e) => handleSpawnBall(e)}></div>
     </div>
   );

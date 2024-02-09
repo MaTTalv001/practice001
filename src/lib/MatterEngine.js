@@ -58,7 +58,18 @@ class MatterEngine {
    * @description オブジェクトを登録する。配列も可能。
    */
   registerObject(object) {
-    this.composite.add(this.engine.world, object);
+    if (Array.isArray(object)) {
+      object.forEach((item) => {
+        if (typeof item.getObject === 'function') {
+          this.composite.add(this.engine.world, item.getObject());
+        }
+      });
+    } else {
+      if (typeof object.getObject === 'function') {
+        this.composite.add(this.engine.world, object.getObject());
+      }
+    }
+
   }
 }
 
