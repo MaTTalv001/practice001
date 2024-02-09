@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import MatterEngine from "../lib/MatterEngine";
-import { Circle, getStageObject } from "../lib/Bodies";
+import { Circle, getStageObject, getObject } from "../lib/Bodies";
 
 function Sample1() {
   const [matter, setMatter] = useState(null);
   const [spawnBall, setSpawnBall] = useState(null);
   const [stageData, setStageData] = useState(null);
+  const [switchObj, setSwitchObj] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -44,7 +45,8 @@ function Sample1() {
       matter.run();
       if (stageData) {
         const stageObject = getStageObject(matter.getMatter(), stageData.Stage);
-        matter.registerObject(stageObject);
+        const switchButton = getObject(matter.getMatter(), stageData.Switch, "Switch");
+        matter.registerObject([switchButton, ...stageObject]);
       }
 
       setLoading(false);
@@ -56,7 +58,13 @@ function Sample1() {
     const rect = e.target.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    spawnBall.objectSpawn(x, y);
+    const radius = 25;
+    const option = {
+      render: {
+        fillStyle: "yellow"
+      }
+    }
+    spawnBall.objectSpawn(x, y, radius, option);
   };
 
   if (loading) {

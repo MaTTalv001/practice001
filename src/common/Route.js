@@ -1,8 +1,4 @@
 export const RoutePath = {
-  bodies: {
-    path: "/bodies",
-    name: "Bodies辞書",
-  },
   sample1: {
     path: "/sample1",
     name: "ボール出現サンプル",

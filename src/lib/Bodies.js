@@ -1,4 +1,5 @@
 import "matter-js";
+import getColor from "../common/ColorSetting";
 
 class Bodies {
   Composite = null;
@@ -7,14 +8,15 @@ class Bodies {
   Object = null;
   PosX = 0;
   PosY = 0;
+
   /**
    * @method コンストラクタ
    * @param {Matter} Matter
    * @param {number} x X座標
    * @param {number} y Y座標
-   * @description matterオブジェクトを受け取る
+   * @description 初期化
    */
-  constructor(matter, x, y, options = {}, isSpawn = false) {
+  constructor(matter, x, y) {
     this.Bodies = matter.Bodies;
     this.Composite = matter.Composite;
     this.CompositeCreate = matter.Composite.create();
@@ -24,6 +26,7 @@ class Bodies {
 
   /**
    * @method オブジェクトの静止状態設定
+   * @param {bool} bool 静止しているか否か
    */
   setStatic(bool) {
     this.Bodies.setStatic(this.Object, bool);
@@ -34,9 +37,14 @@ class Bodies {
    * @param {number} x X座標
    * @param {number} y Y座標
    * @param {object} option オプション
+   * @description オブジェクトを指定位置にスポーン
    */
-  objectSpawn(x, y, option) {}
+  objectSpawn(x, y, option) { }
 
+  /**
+   * @method オブジェクトクリア
+   * @description 生成したオブジェクトを全削除
+   */
   objectClear() {
     this.Composite.clear(this.CompositeCreate, false);
   }
@@ -48,11 +56,36 @@ class Bodies {
   getObject() {
     return this.Object || this.CompositeCreate;
   }
+
+  getColorSetting(option, type = "default") {
+    let isStatic = option && option.isStatic !== undefined;
+    return getColor(type, isStatic)
+  }
+
+  getOption(option, type = "default") {
+    let optionAddColor;
+    if (option) {
+      optionAddColor = { ...option, render: this.getColorSetting(option, type) };
+    } else {
+      optionAddColor = { render: this.getColorSetting(option, type) };
+    }
+    return optionAddColor;
+  }
 }
 
 class Rectangle extends Bodies {
   DefaultWidth = 100;
   DefaultHeight = 100;
+
+  /**
+   * @method 初期化
+   * @param {number} x X座標
+   * @param {number} y Y座標
+   * @param {number} width 幅
+   * @param {number} heigth 高さ
+   * @param {object} option オプション
+   * @param {bool} isSpawn スポーンオブジェクトか否か
+   */
   constructor(
     matter,
     x = this.PosX,
@@ -60,14 +93,29 @@ class Rectangle extends Bodies {
     width = this.DefaultWidth,
     height = this.DefaultHeight,
     option = {},
-    isSpawn = false
+    isSpawn = false,
+    type = "default"
   ) {
     super(matter, x, y);
     if (!isSpawn) {
-      this.Object = this.Bodies.rectangle(x, y, width, height, option);
+      this.Object = this.Bodies.rectangle(x, y, width, height, this.getOption(option, type));
+      this.Composite.add(this.CompositeCreate, this.Object);
     } else {
       this.Object = null;
     }
+  }
+
+  /**
+   * @method スポーンオブジェクト生成
+   * @param {number} x X座標
+   * @param {number} y Y座標
+   * @param {number} width 幅
+   * @param {number} height 高さ
+   * @param {object} option オプション
+   */
+  objectSpawn(x, y, width = this.DefaultWidth, height = this.DefaultHeight, option = {}) {
+    const rectangle = this.Bodies.rectangle(x, y, width, height, option)
+    this.Composite.add(this.CompositeCreate, rectangle);
   }
 }
 
@@ -87,11 +135,12 @@ class Circle extends Bodies {
     y,
     radius = this.DefaultRadius,
     option = {},
-    isSpawn = false
+    isSpawn = false,
+    type = "default"
   ) {
     super(matter, x, y, option, isSpawn);
     if (!isSpawn) {
-      this.Object = this.Bodies.circle(x, y, radius, option);
+      this.Object = this.Bodies.circle(x, y, radius, this.getOption(option, type));
       this.Composite.add(this.CompositeCreate, this.Object);
     } else {
       this.Object = null;
@@ -104,8 +153,8 @@ class Circle extends Bodies {
    * @param {number} y Y座標
    * @param {object} option オプション
    */
-  objectSpawn(x, y, width = this.DefaultRadius, option = {}) {
-    const circle = this.Bodies.circle(x, y, width, option);
+  objectSpawn(x, y, radius = this.DefaultRadius, option = {}) {
+    const circle = this.Bodies.circle(x, y, radius, option);
     this.Composite.add(this.CompositeCreate, circle);
   }
 }
@@ -126,10 +175,21 @@ class Triangle extends Bodies {
     y,
     height = this.DefaultHeight,
     option = {},
-    isSpawn = false
+    isSpawn = false,
+    type = "default"
   ) {
-    super(matter, x, y, option);
-    this.Object = this.Bodies.polygon(x, y, 3, height, option);
+    super(matter, x, y);
+    if (!isSpawn) {
+      this.Object = this.Bodies.polygon(x, y, 3, height, this.getOption(option, type));
+      this.Composite.add(this.CompositeCreate, this.Object);
+    } else {
+      this.Object = null;
+    }
+  }
+
+  objectSpawn(x, y, height, option) {
+    const triangle = this.Bodies.polygon(x, y, 3, height, option);
+    this.Composite.add(this.CompositeCreate, triangle);
   }
 }
 
@@ -143,29 +203,40 @@ class Polygon extends Bodies {
     sides = this.DefaultSides,
     radius = this.DefaultRadius,
     option = {},
-    isSpawn = false
+    isSpawn = false,
+    type = "default"
   ) {
-    super(matter, x, y, option);
-    this.Object = this.Bodies.polygon(x, y, sides, radius, option);
+    super(matter, x, y);
+    if (!isSpawn) {
+      this.Object = this.Bodies.polygon(x, y, sides, radius, this.getOption(option, type));
+      this.Composite.add(this.CompositeCreate, this.Object);
+    } else {
+      this.Object = null;
+    }
+  }
+
+  objectSpawn(x, y, sides, height, option) {
+    const triangle = this.Bodies.polygon(x, y, sides, height, option);
+    this.Composite.add(this.CompositeCreate, triangle);
   }
 }
 
 // 引数作成のマッパー
 const mapper = {
-  Rectangle: (stage) => {
-    return [stage.x, stage.y, stage.width, stage.height, stage.option];
+  Rectangle: (stage, type) => {
+    return [stage.x, stage.y, stage.width, stage.height, stage.option, false, type];
   },
 
-  Circle: (stage) => {
-    return [stage.x, stage.y, stage.radius, stage.option];
+  Circle: (stage, type) => {
+    return [stage.x, stage.y, stage.radius, stage.option, false, type];
   },
 
-  Triangle: (stage) => {
-    return [stage.x, stage.y, stage.height, stage.option];
+  Triangle: (stage, type) => {
+    return [stage.x, stage.y, stage.height, stage.option, false, type];
   },
 
-  Polygon: (stage) => {
-    return [stage.x, stage.y, stage.sides, stage.radius, stage.option];
+  Polygon: (stage, type) => {
+    return [stage.x, stage.y, stage.sides, stage.radius, stage.option, false, type];
   },
 };
 
@@ -175,20 +246,21 @@ const getStageObject = (matter, stageData) => {
 
   // ステージタイプからインスタンスするクラスを取得
   for (let stage of stageData) {
-    const Class = {
-      Rectangle,
-      Circle,
-      Triangle,
-      Polygon,
-    }[stage.type];
-
-    // 引数取得
-    const args = mapper[stage.type](stage);
-
-    const object = new Class(matter, ...args);
-    stageObjects.push(object.getObject());
+    const object = getObject(matter, stage);
+    stageObjects.push(object);
   }
   return stageObjects;
 };
 
-export { Bodies, Rectangle, Circle, Triangle, Polygon, getStageObject };
+const getObject = (matter, data, type = "default") => {
+  const Class = {
+    Rectangle,
+    Circle,
+    Triangle,
+    Polygon,
+  }[data.bodiesType];
+  const args = mapper[data.bodiesType](data, type);
+  return new Class(matter, ...args).getObject();
+}
+
+export { Bodies, Rectangle, Circle, Triangle, Polygon, getStageObject, getObject };
