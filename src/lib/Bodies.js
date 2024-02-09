@@ -29,7 +29,7 @@ class Bodies {
 
   /**
    * @method オブジェクトの静止状態設定
-   * @param {bool} bool 静止しているか否か
+   * @param {bool} bool 静止ならtrue
    */
   setStatic(bool) {
     Body.setStatic(this.object, bool);
@@ -80,7 +80,7 @@ class Bodies {
   }
 
   /**
-   * @method スポーンオブジェクト生成
+   * @method オブジェクトをスポーン
    * @param {number} x X座標
    * @param {number} y Y座標
    * @param {object} option オプション
@@ -91,6 +91,8 @@ class Bodies {
   /**
    * @method オブジェクトクリア
    * @description 生成したオブジェクトを全削除
+   *              同じコンポジット内のオブジェクトが全て削除される
+   *              コンポジット自体は削除されない
    */
   objectClear() {
     this.composite.clear(this.compositeCreate, false);
@@ -104,11 +106,23 @@ class Bodies {
     return this.object || this.compositeCreate;
   }
 
+  /**
+   *  @method オブジェクトの色設定取得
+   * @param {object} option オプション
+   * @description オブジェクトの色設定を取得
+   *              オプションがあれば、オプションに色設定を追加して返却
+   *              オプションがなければ、色設定のみ返却
+   */
   getColorSetting(option) {
     let isStatic = option && option.isStatic !== undefined;
     return getColor(this.type, isStatic)
   }
 
+  /**
+   * @method オプション取得
+   * @param {object} option オプション
+   * @description オプションに色設定を追加して返却
+   */
   getOption(option) {
     let optionAddColor;
     if (option) {

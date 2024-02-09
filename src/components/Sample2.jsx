@@ -3,13 +3,16 @@ import MatterEngine from "../lib/MatterEngine";
 import { createObjects, createObject } from "../lib/Bodies";
 import CollisionEvents from "../lib/CollisionEvents";
 import { useNavigate } from "react-router-dom";
-import MouseEvents from "../lib/Mouse";
+import MouseEvents from "../lib/MouseEvents";
+import { Body } from "matter-js";
 
 function Sample2() {
   const matterRef = useRef(null);
   const switchObjRef = useRef(null);
   const stageDataRef = useRef(null);
+  // ユーザーが配置できるオブジェクト
   const placementDataRef = useRef(null);
+  // 現在選択中のオブジェクト
   const selectObjRef = useRef(null);
   const [gameClear, setGameClear] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -69,9 +72,11 @@ function Sample2() {
     // ユーザーが移動できるオブジェクト
     const userObject = createObjects(matterRef.current.getMatter(), stageDataRef.current.UserPlacement, "User");
     placementDataRef.current = userObject;
+    // matter.jsにオブジェクト登録
     matterRef.current.registerObject([switchButton, ...stageObject, ...userObject]);
 
     // マウスイベント作成
+    /// NOTE : クリック・ドラッグは実装済み。クリックアップはあるけど使い道が思い浮かばなかったので未実装
     const mouseEvent = new MouseEvents(matterRef.current.getRender().canvas, matterRef.current.getEngine());
     mouseEvent.setupSelectObject(selectObjRef);
   }
@@ -94,6 +99,7 @@ function Sample2() {
   };
 
   // TODO : 回転をステージ作成のみなのか配置も回転できるようにするのかの確認
+  // 使う機会が多いようであれば、Mouse.jsに移動でも良いかも
   const handleWheel = (e) => {
     // 選択中のオブジェクトがあるなら選択オブジェクトを回転
     if (selectObjRef.current) {
@@ -111,7 +117,7 @@ function Sample2() {
           <p>青色・緑色のオブジェクトは移動できます</p>
           <button onClick={() => handleReset()}>リセット</button>
         </>}
-      <div className="Game"></div>
+      <div className="Game" onWheel={(e) => handleWheel(e)}></div>
     </div>
   );
 }

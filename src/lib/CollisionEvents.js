@@ -3,7 +3,13 @@ import Matter from "matter-js";
 class CollisionEvents {
   events = Matter.Events;
   engine = null;
+  /*
+    TODO : 現在１つしか登録できないので、複数登録できるようにする
+   */
   collisionStartCallback = null;
+  /*
+    TODO : ゴールスイッチの押下イベントは1つでいいが、ギミックスイッチの場合は複数登録できたほうがよさげ
+   */
   switchCallback = null;
   constructor(engine) {
     this.engine = engine;

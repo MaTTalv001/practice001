@@ -14,6 +14,7 @@ function App() {
         <Route path={RoutePath.sample2.path} element={<Sample2 />} />
         <Route path={RoutePath.sample3.path} element={<Sample3 />} />
       </Routes>
+      <footer>©2024</footer>
     </div>
   );
 }

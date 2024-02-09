@@ -6,6 +6,7 @@ const Headers = () => {
   return (
     <header>
       <nav>
+        {/* TODO : Tailwindが聞いていないので直打ち。要確認 */}
         <ul style={{ display: "flex", gap: 10, margin: 10 }}>
           <li>
             <Link to={RoutePath.sample1.path}>{RoutePath.sample1.name}</Link>

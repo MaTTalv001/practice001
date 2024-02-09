@@ -6,6 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
+  // TODO: ここでStrictModeを使うと、Matter.jsの描画が2回描画されてしまうのでコメントアウト
   //<React.StrictMode>
   <BrowserRouter>
     <App />

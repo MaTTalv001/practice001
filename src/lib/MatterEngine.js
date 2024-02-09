@@ -5,15 +5,12 @@ class MatterEngine {
   DisplayHeight = 600;
   matter = null;
   engine = null;
-  bodies = null;
   runner = null;
   composite = null;
-  spawnObject = null;
   render = null;
   constructor() {
     this.matter = Matter;
     this.engine = this.matter.Engine.create();
-    this.bodies = this.matter.Bodies;
     this.runner = this.matter.Runner;
     this.composite = this.matter.Composite;
   }
@@ -44,18 +41,6 @@ class MatterEngine {
     this.runner.run(this.runner.create(), this.engine);
   }
 
-  getMatter() {
-    return this.matter;
-  }
-
-  getEngine() {
-    return this.engine;
-  }
-
-  getRender(){
-    return this.render;
-  }
-
   /**
    * @method オブジェクト登録
    * @param {Bodies} object 登録したいオブジェクト
@@ -74,6 +59,19 @@ class MatterEngine {
       }
     }
 
+  }
+
+  /* ゲッター */
+  getMatter() {
+    return this.matter;
+  }
+
+  getEngine() {
+    return this.engine;
+  }
+
+  getRender() {
+    return this.render;
   }
 }
 
