@@ -242,19 +242,19 @@ const mapper = {
   },
 };
 
-// ステージデータ取得
-const getStageObject = (matter, stageData) => {
+// ステージデータ作成
+const createStageObject = (matter, stageData) => {
   const stageObjects = [];
 
   // ステージタイプからインスタンスするクラスを取得
   for (let stage of stageData) {
-    const object = getObject(matter, stage);
+    const object = createObject(matter, stage);
     stageObjects.push(object);
   }
   return stageObjects;
 };
 
-const getObject = (matter, data, type = "default") => {
+const createObject = (matter, data, type = "default") => {
   const Class = {
     Rectangle,
     Circle,
@@ -265,4 +265,4 @@ const getObject = (matter, data, type = "default") => {
   return new Class(matter, ...args).getObject();
 }
 
-export { Bodies, Rectangle, Circle, Triangle, Polygon, getStageObject, getObject };
+export { Bodies, Rectangle, Circle, Triangle, Polygon, createStageObject, createObject };

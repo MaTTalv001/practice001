@@ -49,7 +49,7 @@ class MatterEngine {
   }
 
   getEngine() {
-    return this.Engine;
+    return this.engine;
   }
 
   /**
