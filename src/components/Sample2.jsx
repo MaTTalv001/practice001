@@ -1,119 +1,99 @@
-import { useEffect, useRef } from "react";
-import Matter from "matter-js";
+import { useEffect, useRef, useState } from "react";
+import MatterEngine from "../lib/MatterEngine";
+import { createObjects, createObject } from "../lib/Bodies";
+import CollisionEvents from "../lib/CollisionEvents";
+import { useNavigate } from "react-router-dom";
+import MouseEvents from "../lib/Mouse";
 
 function Sample2() {
-  const {
-    Engine,
-    Render,
-    Bodies,
-    Runner,
-    Composite,
-    Mouse,
-    MouseConstraint,
-    Events,
-    Body,
-  } = Matter;
+  const matterRef = useRef(null);
+  const switchObjRef = useRef(null);
+  const stageDataRef = useRef(null);
+  const placementDataRef = useRef(null);
   const selectObjRef = useRef(null);
+  const [gameClear, setGameClear] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const navigator = useNavigate();
 
   useEffect(() => {
-    const engine = Engine.create();
-    const render = Render.create({
-      element: document.body.querySelector(".Sample2"),
-      engine: engine,
-      options: {
-        width: 800,
-        height: 600,
-        wireframes: false,
-      },
-    });
-    Render.run(render);
-
-    // 静止オブジェクト（空中の床と地面）
-    const floor = Bodies.rectangle(400, 200, 500, 30, { isStatic: true });
-    const ground = Bodies.rectangle(400, 585, 800, 30, { isStatic: true });
-
-    // 可動オブジェクト（正方形、円、三角形）
-    const square = Bodies.rectangle(
-      floor.bounds.min.x + 50,
-      floor.bounds.max.y - 50,
-      50,
-      50
-    );
-    const circle = Bodies.circle(floor.position.x, floor.bounds.max.y - 50, 50);
-    const triangle = Bodies.polygon(
-      floor.bounds.max.x - 50,
-      floor.bounds.max.y - 50,
-      3,
-      50
-    );
-
-    // マウス制約の追加
-    const mouse = Mouse.create(render.canvas);
-    const mouseConstraint = MouseConstraint.create(engine, {
-      mouse: mouse,
-      constraint: {
-        stiffness: 0.2, // ドラッグ時の弾性
-        render: {
-          visible: false, // マウス制約の表示非表示
-        },
-      },
-    });
-
-    // マウスクリックのイベント
-    Events.on(mouseConstraint, "mousedown", (event) => {
-      // クリックしたオブジェクトを選択、但し床は除外
-      if (event.source.body && event.source.body !== ground) {
-        selectObjRef.current = event.source.body;
-        Body.setStatic(event.source.body, false);
-      } else {
-        // 床やなにもないところをクリックしたら選択解除
-        selectObjRef.current = null;
-      }
-    });
-
-    // ドラッグ終了時に静止オブジェクトを再度静止にする
-    Events.on(mouseConstraint, "enddrag", (event) => {
-      if (event.body === floor) {
-        Body.setStatic(event.body, true);
-      }
-    });
-
-    Events.on(engine, 'collisionStart', function (event) {
-      var pairs = event.pairs;
-
-      // change object colours to show those starting a collision
-      for (var i = 0; i < pairs.length; i++) {
-        var pair = pairs[i];
-        if (pair.bodyA === ground || pair.bodyB === ground) continue;
-        pair.bodyA.render.fillStyle = 'red';
-        pair.bodyB.render.fillStyle = 'red';
-      }
-    });
-
-    Events.on(engine, 'collisionEnd', function (event) {
-      var pairs = event.pairs;
-
-      // change object colours to show those ending a collision
-      for (var i = 0; i < pairs.length; i++) {
-        var pair = pairs[i];
-        if (pair.bodyA === ground || pair.bodyB === ground) continue;
-        pair.bodyA.render.fillStyle = 'green';
-        pair.bodyB.render.fillStyle = 'green';
-      }
-    });
-
-    // オブジェクト登録
-    Composite.add(engine.world, [
-      floor,
-      ground,
-      square,
-      circle,
-      triangle,
-      mouseConstraint,
-    ]);
-    Runner.run(Runner.create(), engine);
+    setLoading(true);
+    // ステージデータの読み込み
+    const getStageData = async () => {
+      // TODO : ここで何かしらの方法でステージ名前を取得する
+      const query = "Sample2";
+      const url = `${process.env.REACT_APP_SERVER_URL}?stage=${query}`;
+      await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          stageDataRef.current = data;
+          matterInitialize();
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    };
+    getStageData();
   }, []);
 
+  useEffect(() => {
+    if (gameClear) {
+      const timeoutId = setTimeout(() => {
+        alert("ゲームクリア");
+        clearTimeout(timeoutId);
+      }, 1000);
+    }
+  }, [gameClear]);
+
+  const matterInitialize = () => {
+    // セットアップ
+    matterRef.current = new MatterEngine();
+    matterRef.current.setup(".Game");
+    matterRef.current.run();
+
+    // イベント設定
+    const colEvents = new CollisionEvents(matterRef.current.getEngine());
+    colEvents.pushSwitch(handleSwitch);
+
+    // オブジェクト登録
+    // スイッチ
+    const switchButton = createObject(matterRef.current.getMatter(), stageDataRef.current.Switch, "Switch");
+    switchObjRef.current = switchButton;
+    // ステージオブジェクト
+    const stageObject = createObjects(matterRef.current.getMatter(), stageDataRef.current.Stage);
+    // ユーザーが移動できるオブジェクト
+    const userObject = createObjects(matterRef.current.getMatter(), stageDataRef.current.UserPlacement, "User");
+    placementDataRef.current = userObject;
+    matterRef.current.registerObject([switchButton, ...stageObject, ...userObject]);
+
+    // マウスイベント作成
+    const mouseEvent = new MouseEvents(matterRef.current.getRender().canvas, matterRef.current.getEngine());
+    mouseEvent.setupSelectObject(selectObjRef);
+  }
+
+  // スイッチ押下時のイベント
+  const handleSwitch = () => {
+    // スイッチ押下アニメーション
+    const intervalId = setInterval(() => {
+      const results = switchObjRef.current.setPositionAnimate(600, 580);
+      setGameClear(results);
+      if (results) {
+        clearInterval(intervalId);
+      }
+    }, 1000 / 30); // 30FPS
+  };
+
+  const handleReset = () => {
+    // TODO : ページリロードをしているので工夫が必要
+    navigator(0);
+  };
+
+  // TODO : 回転をステージ作成のみなのか配置も回転できるようにするのかの確認
   const handleWheel = (e) => {
     // 選択中のオブジェクトがあるなら選択オブジェクトを回転
     if (selectObjRef.current) {
@@ -124,14 +104,14 @@ function Sample2() {
   };
 
   return (
-    <div className="Sample2" onWheel={handleWheel}>
-      <p>
-        地面以外のオブジェクトはドラッグで移動可能です。
-        <br />
-        また、選択したあとにマウスホイールで回転ができます。
-        <br />
-        地面あるいはなにもない空間をクリックすると、選択が解除されます。
-      </p>
+    <div>
+      {loading ? <div>loading...</div> :
+        <>
+          <h2>{stageDataRef.current && stageDataRef.current.name}</h2>
+          <p>青色・緑色のオブジェクトは移動できます</p>
+          <button onClick={() => handleReset()}>リセット</button>
+        </>}
+      <div className="Game"></div>
     </div>
   );
 }

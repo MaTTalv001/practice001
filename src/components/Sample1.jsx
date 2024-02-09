@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import MatterEngine from "../lib/MatterEngine";
-import { Circle, createStageObject, createObject } from "../lib/Bodies";
+import { Circle, createObjects, createObject } from "../lib/Bodies";
 import CollisionEvents from "../lib/CollisionEvents";
+import { useNavigate } from "react-router-dom";
 
 function Sample1() {
   const matterRef = useRef(null);
@@ -10,6 +11,7 @@ function Sample1() {
   const stageDataRef = useRef(null);
   const [gameClear, setGameClear] = useState(false);
   const [loading, setLoading] = useState(true);
+  const navigator = useNavigate();
 
   useEffect(() => {
     setLoading(true);
@@ -17,7 +19,6 @@ function Sample1() {
     const getStageData = async () => {
       // TODO : ここで何かしらの方法でステージ名前を取得する
       const query = "Sample1";
-      //const query = "Sample2"; // こちらのコメントアウトを外すと別のステージデータを取得できる
       const url = `${process.env.REACT_APP_SERVER_URL}?stage=${query}`;
       await fetch(url, {
         method: "GET",
@@ -54,7 +55,7 @@ function Sample1() {
   const matterInitialize = () => {
     // セットアップ
     matterRef.current = new MatterEngine();
-    matterRef.current.setup(".Sample1");
+    matterRef.current.setup(".Game");
     matterRef.current.run();
 
     // イベント設定
@@ -64,7 +65,7 @@ function Sample1() {
     // オブジェクト登録
     const switchButton = createObject(matterRef.current.getMatter(), stageDataRef.current.Switch, "Switch");
     switchObjRef.current = switchButton;
-    const stageObject = createStageObject(matterRef.current.getMatter(), stageDataRef.current.Stage);
+    const stageObject = createObjects(matterRef.current.getMatter(), stageDataRef.current.Stage);
     matterRef.current.registerObject([switchButton, ...stageObject]);
   }
 
@@ -96,14 +97,20 @@ function Sample1() {
     spawnBallRef.current.objectSpawn(x, y, radius, option);
   };
 
+  const handleReset = () => {
+    // TODO : ページリロードをしているので工夫が必要
+    navigator(0);
+  };
+
   return (
     <div>
       {loading ? <div>loading...</div> :
         <>
           <h2>{stageDataRef.current && stageDataRef.current.name}</h2>
-          <button onClick={() => spawnBallRef.current.objectClear()}>ボールクリア</button>
+          <p>クリックでボール生成できます。</p>
+          <button onClick={() => handleReset()}>リセット</button>
         </>}
-      <div className="Sample1" onClick={(e) => handleSpawnBall(e)}></div>
+      <div className="Game" onClick={(e) => handleSpawnBall(e)}></div>
     </div>
   );
 }

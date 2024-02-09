@@ -1,7 +1,7 @@
 {
-  "name": "Sample1",
+  "name": "Sample2",
   "version": "1.0.0",
-  "description": "ボール出現サンプル",
+  "description": "移動・回転サンプル",
   "Stage": [
     {
       "bodiesType": "Rectangle",
@@ -18,24 +18,11 @@
       }
     },
     {
-      "bodiesType": "Triangle",
+      "bodiesType": "Rectangle",
       "x": 400,
-      "y": 400,
+      "y": 200,
       "width": 500,
       "height": 30,
-      "option": {
-        "isStatic": true,
-        "sollisionFilter": {
-          "group": -1
-        },
-        "label": "stage"
-      }
-    },
-    {
-      "bodiesType": "Circle",
-      "x": 200,
-      "y": 200,
-      "radius": 50,
       "option": {
         "isStatic": true,
         "sollisionFilter": {
@@ -47,7 +34,7 @@
   ],
   "Switch": {
     "bodiesType": "Rectangle",
-    "x": 600,
+    "x": 400,
     "y": 550,
     "width": 100,
     "height": 50,
@@ -58,5 +45,26 @@
       },
       "label": "switch"
     }
-  }
+  },
+  "UserPlacement": [
+    {
+      "bodiesType": "Circle",
+      "x": 200,
+      "y": 100,
+      "radius": 50,
+      "option": {
+        "isStatic": true,
+        "label": "user"
+      }
+    },
+    {
+      "bodiesType": "Triangle",
+      "x": 500,
+      "y": 100,
+      "height": 50,
+      "option": {
+        "label": "user"
+      }
+    }
+  ]
 }

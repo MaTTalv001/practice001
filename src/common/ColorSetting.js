@@ -2,8 +2,8 @@ const ColorSetting = {
   Static: "gray",
   Switch: "red",
   Move: "yellow",
-  UserStatic: "blue",
-  UserMove: "green"
+  UserStatic: "blue", // TODO : これは仮
+  UserMove: "green" // TODO : これは仮
 }
 
 /* matter.jsの色周りの設定（抜粋）

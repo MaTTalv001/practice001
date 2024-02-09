@@ -67,9 +67,11 @@ class Bodies {
     // 目標座標を計算
     const targetPosition = { x: currentPosition.x + speedX, y: currentPosition.y + speedY };
 
-    // 距離が一定以下なら終了とみなす
-    // ルート計算は重いので、X座標とY座標の差分が絶対値の1以下なら終了とみなす
-    // Math.abs : 絶対値を返却する関数
+    /*
+     NOTE: 距離が一定以下なら終了とみなす処理
+      ルート計算は重いので、X座標とY座標の差分が絶対値の1以下なら終了とみなす
+      Math.absは絶対値を返却する関数
+    */
     if (Math.abs(distanceX) < 1 && Math.abs(distanceY) < 1) {
       return true;
     }
@@ -285,18 +287,18 @@ const mapper = {
   },
 };
 
-// ステージデータ作成
-const createStageObject = (matter, stageData) => {
+// 複数オブジェクト作成
+const createObjects = (matter, datas, type = "default") => {
   const stageObjects = [];
 
-  // ステージタイプからインスタンスするクラスを取得
-  for (let stage of stageData) {
-    const object = createObject(matter, stage);
+  for (let data of datas) {
+    const object = createObject(matter, data, type);
     stageObjects.push(object);
   }
   return stageObjects;
 };
 
+// 単数オブジェクト作成
 const createObject = (matter, data, type = "default") => {
   const Class = {
     Rectangle,
@@ -308,4 +310,4 @@ const createObject = (matter, data, type = "default") => {
   return new Class(matter, ...args);
 }
 
-export { Bodies, Rectangle, Circle, Triangle, Polygon, createStageObject, createObject };
+export { Bodies, Rectangle, Circle, Triangle, Polygon, createObjects, createObject };
