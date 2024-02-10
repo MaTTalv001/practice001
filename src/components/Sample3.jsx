@@ -62,8 +62,12 @@ function Sample3() {
   };
 
   return (
-    <div className="Sample3" onClick={handleClick}>
-      <p>クリックでボールが出現します。</p>
+    <div style={{ width: '100%', margin: "0", display: 'flex', justifyContent: 'center' }}>
+      <div>
+        <div className="Sample3" onClick={handleClick}>
+          <p>クリックでボールが出現します。</p>
+        </div>
+      </div>
     </div>
   );
 }
