@@ -4,6 +4,7 @@ import Matter, { Body, Constraint, Events } from "matter-js";
 function Sample3() {
   const { Engine, Render, Bodies, Runner, Composite } = Matter;
   const [ballComposite, setBallComposite] = useState(null);
+  const [counter, setCounter] = useState(0);
 
   useEffect(() => {
     const engine = Engine.create();
@@ -22,6 +23,8 @@ function Sample3() {
     const floor = Bodies.rectangle(500, 200, 300, 30, {
       angle: 0,
     });
+    // ボタン
+    const button = Bodies.rectangle(500, 570, 200, 50, { isSensor: true, isStatic: true, render: { fillStyle: 'red' } } );
     // 回転軸
     const pivot = Bodies.circle(500, 200, 5, { isStatic: true });
     // 回転制約
@@ -40,11 +43,22 @@ function Sample3() {
     setBallComposite(ballComposite);
 
     // オブジェクト登録
-    Composite.add(engine.world, [constraint, floor, ground, ballComposite]);
+    Composite.add(engine.world, [constraint, floor, ground, ballComposite, button]);
 
     // 更新前処理をイベントに追加
     Events.on(engine, "beforeUpdate", function (event) {
       Body.setAngularVelocity(floor, 0.05);
+    });
+
+    // ボールとボタンの衝突イベント
+    Events.on(engine, "collisionStart", function(event) {
+      var pairs = event.pairs;
+      for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i];
+        if ((pair.bodyA === button && pair.bodyB.label === 'Circle Body') || (pair.bodyB === button && pair.bodyA.label === 'Circle Body')) {
+          setCounter(counter => counter + 1);
+        }
+      }
     });
 
     // オブジェクト用レンダリング作成
@@ -61,11 +75,23 @@ function Sample3() {
     Composite.add(ballComposite, ball);
   };
 
+  // リセットボタンのクリックイベント
+  const handleReset = () => {
+    setCounter(0);
+    Composite.clear(ballComposite, false);
+  };
+
   return (
-    <div style={{ width: '100%', margin: "0", display: 'flex', justifyContent: 'center' }}>
+    <div className="bg-green-300" style={{ width: '100%', margin: "0", display: 'flex', justifyContent: 'center' }}>
       <div>
         <div className="Sample3" onClick={handleClick}>
           <p>クリックでボールが出現します。</p>
+        </div>
+        <div className="counter text-white" style={{ position: 'absolute', top: '80px', right: '160px', zIndex: 1 }}>
+          <p>カウンター: {counter}</p>
+        </div>
+        <div className="reset-button text-white" style={{ position: 'absolute', top: '80px', left: '160px', zIndex: 1 }} onClick={handleReset}>
+          <button>リセット</button>
         </div>
       </div>
     </div>
