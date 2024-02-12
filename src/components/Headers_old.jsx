@@ -4,10 +4,9 @@ import { RoutePath } from "../common/Route";
 
 const Headers = () => {
   return (
-    <header>
+    <header className="pr-4">
       <nav>
-        {/* TODO : Tailwindが聞いていないので直打ち。要確認 */}
-        <ul style={{ display: "flex", gap: 10, margin: 10 }}>
+        <ul className="flex gap-2.5 m-2.5">
           <li>
             <Link to={RoutePath.sample1.path}>{RoutePath.sample1.name}</Link>
           </li>
@@ -21,6 +20,5 @@ const Headers = () => {
       </nav>
     </header>
   );
-};
-
+}
 export default Headers;

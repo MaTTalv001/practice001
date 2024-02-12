@@ -9,64 +9,34 @@ import { useNavigate } from 'react-router-dom';
 const HomePage = () => {
   const navigate = useNavigate();
 
-  const goToSample3 = () => {
-    navigate('/sample3');
-  };
-  
-
   return (
-    <div style={{
-      width: '100vw', height: '100vh', backgroundColor: "#58DC04", position: 'relative'  // 位置を相対的に設定
-    }}>
-      <Header />
-      <div style={{
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 'calc(100% - 40px)' // フッターの高さを引く
-      }}>
-        <div style={{
-          paddingTop: '20px', paddingBottom: '20px', paddingLeft: '60px', paddingRight: '60px', borderRadius: '20px', border: '5px solid black', textAlign: 'center',
-          fontFamily: '"DotGothic16", sans-serif',
-          textShadow: `
-          -1px -1px 0 #000,
-          1px -1px 0 #000,
-          -1px  1px 0 #000,
-          1px  1px 0 #000`
-        }}>
-          
-      <h1 style={{ fontSize: '4rem', margin: '0', color: "#F2F705" }}>Pythagora</h1>
-      <h1 style={{ fontSize: '4rem', margin: '0', color: "#F2F705" }}>maker</h1>
+    <>
+      <div className="bg-green-400 w-screen h-screen relative">
+        <Header />
+        <div className="font-[DotGothic16] flex flex-col items-center justify-center h-[calc(100%-40px)]">
+          <div className="pt-5 pb-5 pl-15 pr-15 rounded-3xl border-4 border-black text-center font-dotgothic16 text-shadow-black ">
+            <h1 className="text-8xl my-3 mx-10 text-yellow-300">Pythagora</h1>
+            <h1 className="text-8xl my-3 mx-10 text-yellow-300">maker</h1>
+          </div>
+          <Link
+            to={RoutePath.sample3.path}
+            className="inline-block mt-0.5 text-5xl py-5 px-10 rounded-xl cursor-pointer font-dotgothic16 font-bold bg-transparent border-none no-underline text-inherit"
+          >
+            Game Start
+          </Link>
+          <footer className="flex justify-between items-center p-2.5 absolute bottom-2 right-0 left-0">
+            <div className="flex ml-10">
+              <div>COPY RIGHT</div>
+              <div>プラバシーポリシー</div>
+              <div>利用規約</div>
+            </div>
+            <p className="text-base text-black m-0">
+              ※本ゲームはPC専用となっております。
+            </p>
+          </footer>
+        </div>
       </div>
-        <Link
-          to={RoutePath.sample3.path}
-          style={{
-          display: 'inline-block', // リンクをインラインブロック要素として扱う
-          marginTop: '0.2rem',
-          fontSize: '40px',
-          padding: '20px 40px',
-          borderRadius: '10px',
-          cursor: 'pointer',
-          fontFamily: '"DotGothic16", sans-serif',
-          fontWeight: 'bold',
-          background: 'transparent',
-          border: 'none',
-          textDecoration: 'none', // リンクの下線を消す
-            color: 'inherit' // リンクの色をテキストの色と同じにする
-          }}
-        >
-          Game Start
-        </Link>
-      <p style={{
-          position: 'absolute', // 絶対位置
-          right: '10px', // 右から10pxの位置
-          bottom: '10px', // 下から10pxの位置
-          fontSize: '1rem', // フォントサイズを小さく
-          color: 'black',
-          margin: '0' // マージンをリセット
-        }}>
-      ※本ゲームはPC専用となっております。
-      </p>
-      </div>
-    </div>
+    </>
   );
-};
-
+}
 export default HomePage;

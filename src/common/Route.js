@@ -11,4 +11,12 @@ export const RoutePath = {
     path: "/sample3",
     name: "自動回転サンプル",
   },
+  signup: {
+    path: "/signup",
+    name: "ユーザー登録",
+  },
+  login: {
+    path: "/login",
+    name: "ログイン",
+  },
 };
