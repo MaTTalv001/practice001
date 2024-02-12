@@ -8,7 +8,7 @@ const LogInPage = () => {
       <Header />
       <div className="flex flex-col items-center justify-center h-[calc(100%-40px)]">
         <div className="p-10 rounded-3xl text-center max-w-screen-lg mx-auto">
-          <h1 className="text-4xl  mb-6">ログイン画面</h1>
+          <h1 className="text-4xl  mb-6">  　　　ログイン画面　　　  </h1>
           <form className="flex flex-col items-center gap-4 w-full px-1">
             <div className="flex w-full max-w-md items-center">
               <input type="email" id="email" placeholder="Email" className="w-full p-2 rounded" />

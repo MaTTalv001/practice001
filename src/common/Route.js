@@ -19,4 +19,8 @@ export const RoutePath = {
     path: "/login",
     name: "ログイン",
   },
+  stageselect: {
+    path: "/stages",
+    name: "ステージセレクト",
+  },
 };
