@@ -9,7 +9,7 @@ const StageSelectPage = () => {
 
   return (
     <>
-    <div className=" w-screen h-screen relative font-[DotGothic16]">
+      <div className=" w-screen h-screen relative font-[DotGothic16]">
         <Header />
         <div class="container m-5 mx-auto pb-10 ">
           <div class="bg-white">
@@ -18,24 +18,20 @@ const StageSelectPage = () => {
                 Default
               </button>
               <button onClick={() => setActiveTab('tab2')} class="mr-1 bg-pink-100 text-gray-600 py-4 px-6 block hover:text-blue-500 focus:outline-none">
-              UserCreate
+                UserCreate
               </button>
               <button class="mr-1 bg-purple-200 text-gray-600 py-4 px-6 block hover:text-blue-500 focus:outline-none">
-              YourStage
+                YourStage
               </button>
-              
             </nav>
           </div>
           <div className="text-center ">
-            
-            
             {activeTab === 'tab1' && <DefaultStages />}
             {activeTab === 'tab2' && <UserCreates />}
-            
           </div>
         </div>
-    </div>
-  </>
+      </div>
+    </>
   );
 };
 
