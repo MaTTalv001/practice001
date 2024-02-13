@@ -23,4 +23,8 @@ export const RoutePath = {
     path: "/stages",
     name: "ステージセレクト",
   },
+  userindex: {
+    path: "/userindex",
+    name: "ユーザー一覧",
+  },
 };

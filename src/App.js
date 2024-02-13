@@ -8,6 +8,7 @@ import LogIn from "./components/LogIn";
 import StageSelect from "./components/StageSelect";
 import { RoutePath } from "./common/Route";
 import HomePage from './components/HomePage';
+import UserIndex from './components/UserIndex';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path={RoutePath.signup.path} element={<SignUp />} />
         <Route path={RoutePath.login.path} element={<LogIn />} />
         <Route path={RoutePath.stageselect.path} element={<StageSelect />} />
+        <Route path={RoutePath.userindex.path} element={<UserIndex />} />
       </Routes>
       
       
